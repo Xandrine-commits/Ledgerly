@@ -93,3 +93,16 @@ Ledgerly uses a relational database to store business data.
 - Date
 - Status
 - Total
+
+## Data Flow
+
+Ledgerly follows a simple client-server architecture:
+
+```text
+Frontend (HTML/CSS/JavaScript)
+            ↓
+        FastAPI
+            ↓
+      REST API Endpoints
+            ↓
+        Database
