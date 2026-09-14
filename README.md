@@ -68,12 +68,12 @@ Small Business Management System built with FastAPI and Vanilla JavaScript.
 | PUT | `/api/orders/{id}` | Update an order |
 | DELETE | `/api/orders/{id}` | Delete an order |
 
-
 ## Database Structure
 
 Ledgerly uses a relational database to store business data.
 
 ### Customers
+
 - ID
 - Name
 - Email
@@ -81,11 +81,13 @@ Ledgerly uses a relational database to store business data.
 - Address
 
 ### Products
+
 - ID
 - Name
 - Price
 
 ### Orders
+
 - ID
 - Customer ID
 - Product ID
@@ -106,9 +108,11 @@ Frontend (HTML/CSS/JavaScript)
       REST API Endpoints
             ↓
         Database
+```
 
+The frontend communicates with the FastAPI backend using HTTP requests such as GET, POST, PUT, and DELETE.
 
-
+FastAPI handles requests, validation, error handling, and database operations before returning JSON responses to the frontend.
 
 ## How to Run
 
@@ -117,20 +121,39 @@ Frontend (HTML/CSS/JavaScript)
 ```bash
 git clone https://github.com/Xandrine-commits/Ledgerly.git
 cd Ledgerly
+```
 
+### 2. Create and activate the virtual environment
+
+```bash
 python -m venv venv
 venv\Scripts\activate
+```
 
+### 3. Install dependencies
+
+```bash
 pip install fastapi uvicorn pydantic email-validator
+```
 
+### 4. Start the FastAPI server
+
+```bash
 python -m uvicorn main:app --reload
+```
 
-http://127.0.0.1:8000
-
-Frontend/index.html
-
-
-Then commit:
+The API will run at:
 
 ```text
-Add project setup instructions
+http://127.0.0.1:8000
+```
+
+### 5. Open the frontend
+
+Open:
+
+```text
+Frontend/index.html
+```
+
+using a local development server such as VS Code Live Server.
