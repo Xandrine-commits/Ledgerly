@@ -67,3 +67,29 @@ Small Business Management System built with FastAPI and Vanilla JavaScript.
 | POST | `/api/orders` | Create an order |
 | PUT | `/api/orders/{id}` | Update an order |
 | DELETE | `/api/orders/{id}` | Delete an order |
+
+
+## Database Structure
+
+Ledgerly uses a relational database to store business data.
+
+### Customers
+- ID
+- Name
+- Email
+- Phone
+- Address
+
+### Products
+- ID
+- Name
+- Price
+
+### Orders
+- ID
+- Customer ID
+- Product ID
+- Quantity
+- Date
+- Status
+- Total
