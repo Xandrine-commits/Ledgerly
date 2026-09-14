@@ -106,3 +106,28 @@ Frontend (HTML/CSS/JavaScript)
       REST API Endpoints
             ↓
         Database
+
+## How to Run
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Xandrine-commits/Ledgerly.git
+cd Ledgerly
+
+python -m venv venv
+venv\Scripts\activate
+
+pip install fastapi uvicorn pydantic email-validator
+
+python -m uvicorn main:app --reload
+
+http://127.0.0.1:8000
+
+Frontend/index.html
+
+
+Then commit:
+
+```text
+Add project setup instructions
