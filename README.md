@@ -13,3 +13,25 @@ Small Business Management System built with FastAPI and Vanilla JavaScript.
 - API integration
 - Data validation
 - Error handling
+
+## Tech Stack
+
+### Frontend
+- HTML
+- CSS
+- JavaScript
+
+### Backend
+- Python
+- FastAPI
+- Pydantic
+
+### Database
+- SQL
+- SQLite
+
+### Tools
+- VS Code
+- Git
+- GitHub
+- Swagger / OpenAPI
