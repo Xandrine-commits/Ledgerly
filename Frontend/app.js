@@ -3,7 +3,7 @@
    --------------------------------------------------------------------------
    Sections:
      1. Utilities
-     2. Data layer (mock data, persisted to localStorage for this prototype)
+     2. Data layer
      3. Toast notifications
      4. Confirm dialog
      5. Shared shell behaviour (nav highlight, mobile sidebar)
@@ -13,12 +13,6 @@
      9. Orders page
      10. Sales page
      11. Boot
-   --------------------------------------------------------------------------
-   WHERE THE BACKEND CONNECTS
-   Every place that currently reads/writes through the DataStore object
-   (section 2) is exactly where a `fetch('/api/...')` call will replace mock
-   logic later. See the comments inside DataStore for the planned endpoints.
-   ========================================================================== */
 
 /* -------------------------------------------------------------------------
    1. Utilities
@@ -140,16 +134,13 @@ const DataStore = (() => {
   }
 
   return {
-    // ---- Customers ---- GET /api/customers
     getCustomers: () => read(KEYS.customers),
     saveCustomer(customer) {
       const list = read(KEYS.customers);
       if (customer.id) {
-        // PUT /api/customers/{id}
         const idx = list.findIndex((c) => c.id === customer.id);
         list[idx] = customer;
       } else {
-        // POST /api/customers
         customer.id = nextId('CUST-', list);
         list.push(customer);
       }
@@ -157,7 +148,6 @@ const DataStore = (() => {
       return customer;
     },
     deleteCustomer(id) {
-      // DELETE /api/customers/{id}
       write(KEYS.customers, read(KEYS.customers).filter((c) => c.id !== id));
     },
 
@@ -409,10 +399,6 @@ function validateField(fieldEl, isValid) {
       `).join('');
     }
 
-    console.log('Dashboard customers:', customers);
-    console.log('Dashboard products:', products);
-    console.log('Dashboard orders:', orders);
-
     renderMonthlyBarChart('#sales-overview-chart', orders);
 
   } catch (error) {
@@ -425,7 +411,7 @@ function renderMonthlyBarChart(selector, orders) {
   const container = $(selector);
   if (!container) return;
 
-  const now = new Date('2026-09-09');
+  const now = new Date();
   const months = [];
 
   for (let i = 5; i >= 0; i -= 1) {
@@ -692,9 +678,7 @@ function initCustomersPage() {
         throw new Error(errorData.detail || 'Failed to delete customer')
       }
 
-      const data = await response.json();
 
-      console.log('Customer deleted:', data);
 
       await render();
 
@@ -760,9 +744,8 @@ function initCustomersPage() {
       throw new Error(errorData.detail || 'Failed to save customer')
     }
 
-    const data = await response.json();
+   
 
-    console.log('Customer saved:', data);
 
     closeModal('customer-modal');
     render();
@@ -907,12 +890,33 @@ async function openProductForm(id) {
   openModal('product-modal');
 }
 
-  function populateCategoryFilter() {
-    const categories = Array.from(new Set(DataStore.getProducts().map((p) => p.category)));
+  async function populateCategoryFilter() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/products`);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Failed to load categories');
+    }
+
+    const products = await response.json();
+
+    const categories = Array.from(
+      new Set(products.map((p) => p.category).filter(Boolean))
+    );
+
     const select = $('#product-category-filter');
-    select.innerHTML = '<option value="all">All categories</option>' +
-      categories.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+
+    select.innerHTML =
+      '<option value="all">All categories</option>' +
+      categories
+        .map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`)
+        .join('');
+
+  } catch (error) {
+    console.error('Error loading categories:', error);
   }
+}
 
   async function viewProduct(id) {
   try {
@@ -978,9 +982,7 @@ async function openProductForm(id) {
         throw new Error(errorData.detail || 'Failed to delete product')
       }
 
-      const data = await response.json();
 
-      console.log('Product deleted:', data);
 
       await render();
 
@@ -1018,7 +1020,7 @@ async function openProductForm(id) {
     let response;
 
     if (id) {
-      // EDIT PRODUCT — gagawin natin sa next step
+      // EDIT PRODUCT
       response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
         method: 'PUT',
         headers: {
@@ -1042,9 +1044,7 @@ async function openProductForm(id) {
       throw new Error(errorData.detail || 'Failed to save product');
     }
 
-    const data = await response.json();
 
-    console.log('Product saved:', data);
 
     closeModal('product-modal');
 
@@ -1155,8 +1155,9 @@ function initOrdersPage() {
       const response = await fetch(`${API_BASE_URL}/api/orders/${id}`);
 
       if (!response.ok) {
-        throw new error('Failed to load order')
-      }
+     const errorData = await response.json();
+     throw new Error(errorData.detail || 'Failed to load order');
+}
 
       const o = await response.json();
 
@@ -1380,7 +1381,7 @@ if ([...$('#order-customer').options].some(option => option.value === customerId
   $('#order-customer').value = customerId;
 }
 
-      // API currently doesn't have date/status yet
+      // Create order
       $('#order-date').value = todayISO();
       $('#order-status').value = 'Pending';
 
@@ -1426,9 +1427,7 @@ async function removeOrder(id) {
       throw new Error(errorData.detail || 'Failed to delete order');
     }
 
-    const data = await response.json();
 
-    console.log('Order deleted:', data);
 
     await render();
 
@@ -1461,8 +1460,6 @@ async function removeOrder(id) {
     return;
   }
 
-  console.log('CUSTOMER SELECT:', $('#order-customer').value);
-  console.log('PRODUCT SELECT:', row.querySelector('.line-product').value);
 
  const order = {
   customer_id: Number($('#order-customer').value),
@@ -1473,7 +1470,6 @@ async function removeOrder(id) {
  total: Number($('#order-total-value').textContent.replace(/[^0-9.-]+/g, ''))
 };
 
-  console.log('ORDER DATA:', JSON.stringify(order, null, 2));
 
   try {
     let response;
@@ -1501,9 +1497,7 @@ async function removeOrder(id) {
       throw new Error(errorData.detail || 'Failed to save order')
     }
 
-    const data = await response.json();
 
-    console.log('Order saved:', data);
 
     closeModal('order-modal');
 
@@ -1566,9 +1560,6 @@ async function initSalesPage() {
       status: o.status
     }));
 
-    console.log("ORDERS:", orders);
-    console.log("CUSTOMERS:", customers);
-    console.log("SALES:", sales)
 
   const total = sales.reduce((sum, sale) => sum + sale.amount, 0);
   const avg = sales.length ? total / sales.length : 0;
@@ -1579,8 +1570,6 @@ async function initSalesPage() {
   
     const tbody = $('#sales-body');
 
-    console.log("TBODY:", tbody);
-    console.log("SALES LENGTH:", sales.length);
 
 
 
@@ -1608,11 +1597,15 @@ async function initSalesPage() {
         })
         .join('');
 
-        console.log("TABLE HTML:", tbody.innerHTML);
     }
 
-    renderMonthlyBarChart('#sales-summary-chart', sales);
-
+    renderMonthlyBarChart(
+   '#sales-summary-chart',
+   sales.map(s => ({
+    date: s.date,
+    total: s.amount
+  }))
+);
   } catch (error) {
     console.error('Error loading sales:', error);
 
@@ -1644,18 +1637,9 @@ function iconTrash() {
   return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>';
 }
 
-async function testCustomer() {
-  const response = await fetch(`${API_BASE_URL}/api/customers`);
-  const data = await response.json();
-
-  console.log(data);
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-  DataStore.seed();
   initShell();
 
-  testCustomer();
 
   const page = document.body.dataset.page;
   const initByPage = {
