@@ -19,6 +19,20 @@
    ------------------------------------------------------------------------- */
 const $ = (sel, scope = document) => scope.querySelector(sel);
 const $$ = (sel, scope = document) => Array.from(scope.querySelectorAll(sel));
+const token = localStorage.getItem("access_token");
+
+if (!token) {
+  window.location.href = "login.html";
+}
+
+const logoutButton = document.getElementById("logout-btn");
+
+if (logoutButton) {
+  logoutButton.addEventListener("click", () => {
+    localStorage.removeItem("access_token");
+    window.location.href = "login.html"
+  });
+}
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -340,9 +354,22 @@ function validateField(fieldEl, isValid) {
   try {
     const [customersResponse, productsResponse, orderResponse] =
       await Promise.all([
-        fetch(`${API_BASE_URL}/api/customers`),
-        fetch(`${API_BASE_URL}/api/products`),
-        fetch(`${API_BASE_URL}/api/orders`)
+        fetch(`${API_BASE_URL}/api/customers`, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+          }
+        }),
+
+        fetch(`${API_BASE_URL}/api/products`, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+          }
+        }),
+        fetch(`${API_BASE_URL}/api/orders`, {
+          headers:  {
+            "Authorization":  `Bearer ${localStorage.getItem("access_token")}`
+          }
+        })
       ]);
 
     if (
@@ -491,7 +518,11 @@ function initCustomersPage() {
 
   async function render() {
     try {
-     const response = await fetch(`${API_BASE_URL}/api/customers`);
+     const response = await fetch(`${API_BASE_URL}/api/customers`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      }
+     });
 
 
       if (!response.ok) {
@@ -565,7 +596,11 @@ function initCustomersPage() {
 
   async function viewCustomer(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/customers/${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/customers/${id}`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      }
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -619,7 +654,11 @@ function initCustomersPage() {
 
   if (id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/customers/${id}`);
+      const response = await fetch(`${API_BASE_URL}/api/customers/${id}`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
+      });
 
       if (!response.ok) {
        const errorData = await response.json();
@@ -651,7 +690,11 @@ function initCustomersPage() {
     let c = null;
 
     try {
-      const getResponse = await fetch(`${API_BASE_URL}/api/customers/${id}`);
+      const getResponse = await fetch(`${API_BASE_URL}/api/customers/${id}`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
+      });
 
       if (getResponse.ok) {
         c = await getResponse.json();
@@ -670,7 +713,10 @@ function initCustomersPage() {
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/customers/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
       });
 
       if(!response.ok) {
@@ -724,7 +770,8 @@ function initCustomersPage() {
       response = await fetch(`${API_BASE_URL}/api/customers/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`
         },
         body: JSON.stringify(customer)
       });
@@ -733,7 +780,9 @@ function initCustomersPage() {
       response = await fetch(`${API_BASE_URL}/api/customers`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`
+
         },
         body: JSON.stringify(customer)
       });
@@ -782,7 +831,11 @@ function initProductsPage() {
 
  async function render() {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/products`);
+    const response = await fetch(`${API_BASE_URL}/api/products`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      }
+    });
 
    if (!response.ok) {
   const errorData = await response.json();
@@ -866,7 +919,11 @@ async function openProductForm(id) {
 
   if (id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/products/${id}`);
+      const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -892,7 +949,11 @@ async function openProductForm(id) {
 
   async function populateCategoryFilter() {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/products`);
+    const response = await fetch(`${API_BASE_URL}/api/products`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      }
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -920,7 +981,11 @@ async function openProductForm(id) {
 
   async function viewProduct(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/products/${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      }
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -955,7 +1020,11 @@ async function openProductForm(id) {
     let p = null;
 
     try {
-      const getResponse = await fetch(`${API_BASE_URL}/api/products/${id}`);
+      const getResponse = await fetch(`${API_BASE_URL}/api/products/${id}`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
+      });
 
       if (getResponse.ok) {
         p = await getResponse.json();
@@ -974,7 +1043,10 @@ async function openProductForm(id) {
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
       });
 
       if(!response.ok) {
@@ -1024,7 +1096,8 @@ async function openProductForm(id) {
       response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`
         },
         body: JSON.stringify(product)
       });
@@ -1033,7 +1106,8 @@ async function openProductForm(id) {
       response = await fetch(`${API_BASE_URL}/api/products`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization':  `Bearer ${localStorage.getItem("access_token")}`
         },
         body: JSON.stringify(product)
       });
@@ -1083,7 +1157,11 @@ function initOrdersPage() {
 
   async function render() {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/orders`);
+    const response = await fetch(`${API_BASE_URL}/api/orders`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      }
+    });
 
     if (!response.ok) {
       throw new Error('Failed to load orders');
@@ -1152,7 +1230,11 @@ function initOrdersPage() {
 
   async function viewOrder(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/orders/${id}`);
+      const response = await fetch(`${API_BASE_URL}/api/orders/${id}`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
+      });
 
       if (!response.ok) {
      const errorData = await response.json();
@@ -1210,7 +1292,11 @@ function initOrdersPage() {
   const select = $('#order-customer');
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/customers`);
+    const response = await fetch(`${API_BASE_URL}/api/customers`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      }
+    });
 
     if (!response.ok) {
       throw new Error('Failed to load customers');
@@ -1237,7 +1323,11 @@ function initOrdersPage() {
 }
 async function loadOrderProducts() {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/products`);
+    const response = await fetch(`${API_BASE_URL}/api/products`, {
+      headers: {
+         "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      }
+    });
 
     if (!response.ok) {
       throw new Error('Failed to load products');
@@ -1364,7 +1454,11 @@ async function loadOrderProducts() {
 
   if (id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/orders/${id}`);
+      const response = await fetch(`${API_BASE_URL}/api/orders/${id}`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
+      });
 
       if(!response.ok) {
         const errorData = await response.json();
@@ -1418,7 +1512,10 @@ async function removeOrder(id) {
     const response = await fetch(
       `${API_BASE_URL}/api/orders/${id}`,
       {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+           "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
       }
     );
 
@@ -1478,7 +1575,8 @@ async function removeOrder(id) {
       response = await fetch(`${API_BASE_URL}/api/orders/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`
         },
         body: JSON.stringify(order)
       });
@@ -1486,7 +1584,8 @@ async function removeOrder(id) {
       response = await fetch(`${API_BASE_URL}/api/orders`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`
         },
         body: JSON.stringify(order)
       });
@@ -1531,8 +1630,16 @@ async function removeOrder(id) {
 async function initSalesPage() {
   try {
     const [orderResponse, customerResponse] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/orders`),
-      fetch(`${API_BASE_URL}/api/customers`)
+      fetch(`${API_BASE_URL}/api/orders`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
+      }),
+      fetch(`${API_BASE_URL}/api/customers`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+        }
+      })
     ]);
 
     if (!orderResponse.ok || !customerResponse.ok) {
